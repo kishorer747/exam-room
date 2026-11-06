@@ -96,3 +96,15 @@ test('the template and rules quote nothing from the marking notes', () => {
     }
   }
 });
+
+test('neither folder allows a shell, the web, sub-agents, file writing or the tools that manage Switch', () => {
+  const never = ['Bash', 'WebFetch', 'WebSearch', 'Agent', 'Edit', 'Write', 'mcp__switch__create_agent', 'mcp__switch__create_room', 'mcp__switch__add_users_to_room', 'mcp__switch__archive_room', 'mcp__switch__run_template'];
+  for (const rel of ['../course/lessons/.claude/settings.json', '../examiner-bank/.claude/settings.json']) {
+    const { deny, blockReadsOutsideWorkingDirectories } = JSON.parse(readFileSync(new URL(rel, import.meta.url), 'utf8')).permissions;
+    for (const tool of never) assert.ok(deny.includes(tool), `${rel} must deny ${tool}`);
+    assert.equal(blockReadsOutsideWorkingDirectories, true, rel);
+  }
+  const example = JSON.parse(readFileSync(new URL('../docs/claude-settings.example.json', import.meta.url), 'utf8'));
+  for (const tool of ['Bash', 'WebFetch', 'mcp__switch__create_agent']) assert.ok(example.permissions.deny.includes(tool), tool);
+  assert.equal(example.enableAllProjectMcpServers, undefined);
+});
