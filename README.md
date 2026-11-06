@@ -1,6 +1,6 @@
 # Exam Room
 
-A Switch workflow for self-study: one room where a tutor agent teaches a short lesson and a **separate** examiner agent sets and marks an exam on it. The room's own message log is the memory, so a later session is meant to start from the weak spots an earlier one found.
+A Switch workflow for self-study: one room where a tutor agent teaches a short lesson and a **separate** examiner agent sets and marks an exam on it. The room's own message log is the memory: a later examiner session starts from the weak spots an earlier one found (seen once, `docs/evidence/rehearsal-memory-2026-11-06.md`).
 
 Built for the Flip the Switch hackathon (November 4-7, 2026), Track 2.
 
@@ -126,7 +126,7 @@ These are text checks on the template and the settings files. They do not start 
 | Only the examiner marks, and the tutor never calls a topic passed | Agent instructions and the room document | Convention | held in the rehearsal, one exam |
 | Only a person's answer counts | Agent instructions and the room document | Convention | the examiner said so in the rehearsal. An answer passed on by an agent was not tried |
 | A result block reveals no answer, worked figure or marking note | Agent instructions and the room document | Convention | held in the rehearsal: three blocks and 17 examiner posts searched |
-| The examiner starts a session from the weak spots already in the room log | Agent instructions and the room document | Convention | seen within one sitting in the rehearsal. A later session with no private memory is not yet observed |
+| The examiner starts a session from the weak spots already in the room log | Agent instructions and the room document | Convention | held in `docs/evidence/rehearsal-memory-2026-11-06.md`: a fresh examiner session cited the earlier result block by its message id |
 
 The rows that point to `docs/switch-notes.md` were seen on agents started by Console in a sibling workflow by the same author, under the same settings file. The rows that say "rehearsal" were seen on this repo's own tutor and examiner, once, in `docs/evidence/rehearsal-exam-2026-11-06.md`.
 
@@ -140,7 +140,7 @@ Two more things, neither of them an agent rule:
 None of the following has been seen running. Each is what the workflow is meant to do, and each stays in this list until there is a recording or a saved room log in `docs/evidence/`.
 
 - A person typing their answers in the room from the messaging app. The one rehearsal sent them from Console chats.
-- A second session starting from earlier weak spots after both agents have lost their private memory, using only the room log.
+- The tutor starting fresh. Killing its process made Console resume the same session, so only the examiner has been seen starting from the room log with no private memory.
 - An answer passed on by an agent being refused.
 - Whether `channel_private` closes the channel in the messaging app.
 - A second person in the room.
@@ -171,7 +171,7 @@ Everything marked observed was seen on one computer, on Switch Console 0.40.1 wi
 | `docs/claude-settings.example.json` | The user-level Claude Code settings the agents must run under |
 | `docs/switch-notes.md` | What was seen running, with dates |
 | `docs/video-plan.md` | The shot list for the demo video |
-| `docs/evidence/` | A saved copy of the hackathon rules, and the log of the one rehearsal so far |
+| `docs/evidence/` | A saved copy of the hackathon rules, and the logs of the two rehearsals so far |
 
 ## Licence
 
