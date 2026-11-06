@@ -29,3 +29,19 @@ Switch Console 0.40.1, Discord, 2026-11-05. Observed results, not expectations. 
 - Every agent sees 59 Switch tools, including create_agent, create_room, add_users_to_room and archive_room. Not yet tested which of them an `anyone` agent can really use.
 - A non-member agent still lists rooms it is not in, by name. A room link exposes the linked room's name and description.
 - A Claude agent has no sandbox here. From the intake agent: `wc -l ~/.zshrc` returned 519, and curl to example.com returned 200. So it can read the home folder and reach the internet.
+
+## 2026-11-06
+
+Switch Console 0.40.1, Claude Code 2.1.311, Discord bridge. All seven results are from agents started by Console. None is from this repo's tutor and examiner in the shape the template has from today, because that run is still to come. Rows 2 and 3 were seen in a sibling workflow by the same author.
+
+| Item | Result | Evidence |
+|---|---|---|
+| (1) Claude agent under the user-level settings in `docs/claude-settings.example.json` | No shell tool, no web tool. Read, Grep and Glob refuse any path outside the agent's own working directory | The refusal names `permissions.blockReadsOutsideWorkingDirectories` |
+| (2) `.mcp.json` in an agent's working folder | That agent, and only that agent, gets the MCP tools it names | Seen with two single-purpose tools in the sibling workflow. This repo has no `.mcp.json` |
+| (3) Project-level `.claude/settings.json` with `{"permissions":{"deny":["Edit","Write"]}}` in an agent's working folder | That agent loses its file-editing tools | Seen on the sibling workflow's checking agent |
+| (4) Codex agent under Console | Can read the whole home folder and has a working web tool. Console applies its own Codex sandbox and ignores a `config.toml` permission profile | So Codex is not used for now |
+| (5) Claude Code's OS sandbox setting | Stalls agents started by Console | Not used. The boundary is "no shell" plus rows 1 and 3 |
+| (6) Applying a template | Templates > Import template > Save > Use template > fill inputs > Create all. Directory inputs take absolute paths | Saving does not validate. The wizard does |
+| (7) Room membership and addressing | Enforced by Switch. An agent that is not in a room is refused on read and on post | Rows (c), (d) and (e) in the first table |
+
+Row 1 holds only with that settings file in use. The 2026-11-05 security finding above, that a Claude agent could read the home folder and reach the internet, was recorded before this settings file was added to the repo, so treat it as what to expect without it.
