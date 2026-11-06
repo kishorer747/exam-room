@@ -6,7 +6,7 @@ Built for the Flip the Switch hackathon (November 4-7, 2026), Track 2.
 
 **Demo video:** _link to be added before submission_
 
-**Read this first.** The setup below has been tested in parts, on the author's own Switch Console. A full exam from start to finish has not been recorded yet. This README says "is meant to" for anything that has not been seen running, and the section [Not yet observed](#not-yet-observed) lists those things in one place.
+**Read this first.** The setup below has been tested in parts, on the author's own Switch Console. One full exam has been rehearsed from start to finish: a fail, a re-teach, a pass on the retake and an overrule (`docs/evidence/rehearsal-exam-2026-11-06.md`). In that rehearsal the person's answers were sent from Console chats, not typed in the room, and it is not the recorded run. This README says "is meant to" for anything that has not been seen running, and the section [Not yet observed](#not-yet-observed) lists those things in one place.
 
 ## What it is
 
@@ -99,7 +99,7 @@ A new config folder starts logged out, so log in to Claude Code once with that v
 
 **7. Check the limits before you rely on them.** In the room, ask the tutor to read a file in the examiner's folder by its full path, and ask it to run any shell command. It is meant to be refused both times, and the file refusal should name `permissions.blockReadsOutsideWorkingDirectories`. If the tutor can do either, the settings file is not in use: stop, archive the room and agents, and go back to step 2.
 
-**8. Use it.** The room is meant to open with the tutor listing the three lessons. Pick one, ask questions, and say when you are ready. The tutor then calls the examiner.
+**8. Use it.** Type in the room from your messaging app. Console shows a mirrored room but has no box to type in. The room opens with the tutor listing the three lessons. Pick one, ask questions, and say when you are ready. The tutor then calls the examiner.
 
 To run the checks:
 
@@ -120,15 +120,15 @@ These are text checks on the template and the settings files. They do not start 
 | A Claude agent has no shell tool and no web tool | The user-level settings file | Enforced, only with that file in use | observed, see docs/switch-notes.md |
 | A Claude agent's file tools refuse any path outside its working directory | The user-level settings file | Enforced, only with that file in use | observed, see docs/switch-notes.md |
 | An agent whose folder denies Edit and Write has no file-editing tools | `.claude/settings.json` in the agent's folder | Enforced | observed, see docs/switch-notes.md |
-| This repo's tutor is refused when it tries to open the examiner bank | The two rows on file tools, applied here: the tutor works in `course/lessons`, the bank is in `examiner-bank` | Enforced by design | not yet observed |
-| This repo's tutor and examiner cannot change the lessons or the bank | `course/lessons/.claude/settings.json` and `examiner-bank/.claude/settings.json` | Enforced by design | not yet observed |
+| This repo's tutor is refused when it tries to open the examiner bank | The two rows on file tools, applied here: the tutor works in `course/lessons`, the bank is in `examiner-bank` | Enforced | observed in the rehearsal: the tutor's read of the bank file by its full path was refused |
+| This repo's tutor and examiner cannot change the lessons or the bank | `course/lessons/.claude/settings.json` and `examiner-bank/.claude/settings.json` | Enforced | observed in the rehearsal: both agents reported no shell tool and no file-writing tool, and no file was created |
 | The room's channel is closed to other people in the messaging app | `channel_type: channel_private` in the template | Unknown | not yet observed |
-| Only the examiner marks, and the tutor never calls a topic passed | Agent instructions and the room document | Convention | not yet observed |
-| Only a person's answer counts | Agent instructions and the room document | Convention | not yet observed |
-| A result block reveals no answer, worked figure or marking note | Agent instructions and the room document | Convention | not yet observed |
-| The examiner starts a session from the weak spots already in the room log | Agent instructions and the room document | Convention | not yet observed |
+| Only the examiner marks, and the tutor never calls a topic passed | Agent instructions and the room document | Convention | held in the rehearsal, one exam |
+| Only a person's answer counts | Agent instructions and the room document | Convention | the examiner said so in the rehearsal. An answer passed on by an agent was not tried |
+| A result block reveals no answer, worked figure or marking note | Agent instructions and the room document | Convention | held in the rehearsal: three blocks and 17 examiner posts searched |
+| The examiner starts a session from the weak spots already in the room log | Agent instructions and the room document | Convention | seen within one sitting in the rehearsal. A later session with no private memory is not yet observed |
 
-The observed rows were seen on agents started by Console in a sibling workflow by the same author, under the same settings file. They have not yet been seen on this repo's own tutor and examiner, which is why the two "by design" rows are marked as they are.
+The rows that point to `docs/switch-notes.md` were seen on agents started by Console in a sibling workflow by the same author, under the same settings file. The rows that say "rehearsal" were seen on this repo's own tutor and examiner, once, in `docs/evidence/rehearsal-exam-2026-11-06.md`.
 
 Two more things, neither of them an agent rule:
 
@@ -139,12 +139,9 @@ Two more things, neither of them an agent rule:
 
 None of the following has been seen running. Each is what the workflow is meant to do, and each stays in this list until there is a recording or a saved room log in `docs/evidence/`.
 
-- A failed exam, then the tutor re-teaching the named weak spot, then a pass on the retake.
-- An overrule of a mark being written to the room as an `OVERRULE:` line with a corrected result block.
-- A second session starting from earlier weak spots after both agents have restarted, using only the room log.
-- Whether result blocks leak marking-note text. The tutor reads the room, so a leak there would reach it.
-- This template, in the shape it has now, going through the Console wizard and creating the room and both agents.
-- The tutor in this repo being refused the examiner bank, and either agent being refused an edit.
+- A person typing their answers in the room from the messaging app. The one rehearsal sent them from Console chats.
+- A second session starting from earlier weak spots after both agents have lost their private memory, using only the room log.
+- An answer passed on by an agent being refused.
 - Whether `channel_private` closes the channel in the messaging app.
 - A second person in the room.
 
@@ -174,7 +171,7 @@ Everything marked observed was seen on one computer, on Switch Console 0.40.1 wi
 | `docs/claude-settings.example.json` | The user-level Claude Code settings the agents must run under |
 | `docs/switch-notes.md` | What was seen running, with dates |
 | `docs/video-plan.md` | The shot list for the demo video |
-| `docs/evidence/` | A saved copy of the hackathon rules. Rehearsal logs will go here |
+| `docs/evidence/` | A saved copy of the hackathon rules, and the log of the one rehearsal so far |
 
 ## Licence
 
