@@ -1,7 +1,14 @@
 # Exam Room: a tutor who teaches and a separate examiner who marks, in one room.
 #
 # The room's log is the memory: a new session starts from the weak spots already written there.
-# Before using this, copy examiner-bank/ into the examiner's working folder. See the README.
+#
+# Both agents run on Claude Code and each works in a folder of this repo: the tutor in
+# course/lessons, the examiner in examiner-bank. Neither has a shell. The tutor cannot read
+# the examiner bank, because its file tools stop at its own folder. That makes "the tutor
+# never sees the marking notes" something the setup enforces and not a convention, PROVIDED
+# the user-level settings file in docs/claude-settings.example.json is in place. Without that
+# file none of this holds. Room membership and addressing are enforced by Switch. What the
+# agents' instructions ask of them is convention. The README says which is which.
 version: 1
 
 params:
@@ -9,17 +16,15 @@ params:
     type: string
     description: Prefix for every name this creates
     pattern: "[a-z][a-z0-9-]*"
-  course_dir:
+  lessons_dir:
     type: directory
-    description: Absolute path of this repo's course folder. The tutor works here.
-  directory:
+    description: Absolute path of this repo's course/lessons folder. The tutor works here and cannot read the examiner bank.
+  bank_dir:
     type: directory
-    description: The examiner's working directory, a folder of its own
-    default: "{$agents_dir}/{agent}"
-    input: advanced
+    description: Absolute path of this repo's examiner-bank folder. The examiner works here.
   location:
     type: location
-    description: The machine both run on
+    description: The machine both agents are on
     default: local
     input: advanced
   bridge:
@@ -32,11 +37,16 @@ agents:
     description: Teaches one lesson at a time and answers questions
     provider: claude
     location: "{location}"
-    directory: "{course_dir}"
+    directory: "{lessons_dir}"
     addressing: anyone
     instructions: |
-      You are the tutor. The lessons are in lessons/ in your working directory. Teach
-      one lesson at a time, plainly, and answer questions about it.
+      You are the tutor. The lessons are the files in your working directory, one for
+      each lesson. Teach one lesson at a time, plainly, and answer questions about it.
+      You have no shell, and your file tools stop at this folder. Read the lessons and
+      change nothing.
+
+      You cannot see the examiner's questions or marking notes, and you do not need to.
+      Never ask anyone for them, and do not guess what the questions were.
 
       You never mark anything and you never say a topic is closed, finished or passed.
       Only the examiner's result block decides that: read the room document Exam rules.
@@ -44,18 +54,19 @@ agents:
       that lesson, then stay quiet until a result block appears.
 
       When a result block says FAIL, re-teach the weak spot it names, then ask the
-      person whether they are ready to retake. Do not guess what the questions were.
+      person whether they are ready to retake.
   - name: "{team}-examiner"
     description: Asks questions from a private bank and marks the answers
-    provider: codex
+    provider: claude
     location: "{location}"
-    directory: "{directory}"
+    directory: "{bank_dir}"
     addressing: anyone
     instructions: |
-      You are the examiner. Your questions and marking notes are in examiner-bank/ in
-      your working directory, one file for each lesson. If that folder is missing, say
-      so and stop. Follow the room document Exam rules and the "How to mark" section at
-      the top of each bank file.
+      You are the examiner. Your questions and marking notes are the files in your
+      working directory, one for each lesson. If there are none, say so and stop. You
+      have no shell, and your file tools stop at this folder. Read the bank and change
+      nothing. Follow the room document Exam rules and the "How to mark" section at the
+      top of each bank file.
 
       Before your first question in a session, read this room's earlier result blocks
       and overrules. Start from the most recent weak spot on the topic, and name the
@@ -107,7 +118,7 @@ room:
 
         This room's log is the memory. At the start of a session the examiner reads earlier result blocks and overrules in the room, and begins with the most recent weak spot on the topic.
 
-        This is an honesty exam for self-study. The bank is in a public repo and every agent runs as the same user on the computer, so keeping it in the examiner's folder is a convention and not a lock.
+        This is an honesty exam for self-study. The bank is in a public repo, so the person taking the exam can open it whenever they like, and only their own honesty stops them. The tutor is a different matter: it works in the lessons folder, the bank is in the examiner's folder, and the tutor's file tools stop at its own folder. That holds only while the settings file described in the README is in place.
 
 kickoff: |
   @{team}-tutor say hello in one line and list the three lessons. Ask which one to start with.

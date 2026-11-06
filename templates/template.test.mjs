@@ -14,6 +14,9 @@ const dedent = (text, spaces) =>
     .map((line) => line.slice(spaces))
     .join('\n');
 
+const tutor = template.slice(template.indexOf('- name: "{team}-tutor"'), template.indexOf('- name: "{team}-examiner"'));
+const examiner = template.slice(template.indexOf('- name: "{team}-examiner"'), template.indexOf('room:\n'));
+
 test('the room document is the rules file, word for word', () => {
   const start = template.indexOf('        # Exam rules');
   const end = template.indexOf('\nkickoff:', start);
@@ -22,20 +25,69 @@ test('the room document is the rules file, word for word', () => {
 });
 
 test('no agent bypasses permission checks', () => {
-  assert.doesNotMatch(template, /auto_approve:\s*true/);
+  assert.doesNotMatch(template, /auto_approve/);
 });
 
-test('the tutor is not told where the bank is, and the examiner runs on the other vendor', () => {
-  const tutor = template.slice(template.indexOf('- name: "{team}-tutor"'), template.indexOf('- name: "{team}-examiner"'));
-  const examiner = template.slice(template.indexOf('- name: "{team}-examiner"'), template.indexOf('room:\n'));
-  assert.doesNotMatch(tutor, /examiner-bank/);
-  assert.match(examiner, /provider: codex/);
-  assert.match(examiner, /examiner-bank/);
+test('both agents run on claude, and no other provider is named', () => {
+  assert.match(tutor, /provider: claude\n/);
+  assert.match(examiner, /provider: claude\n/);
+  assert.deepEqual(template.match(/provider: \S+/g), ['provider: claude', 'provider: claude']);
+});
+
+test('each agent works in its own folder param, and both are directory inputs', () => {
+  assert.match(tutor, /directory: "\{lessons_dir\}"/);
+  assert.match(examiner, /directory: "\{bank_dir\}"/);
+  assert.match(template, /  lessons_dir:\n    type: directory\n/);
+  assert.match(template, /  bank_dir:\n    type: directory\n/);
+  assert.deepEqual(template.match(/\n    directory: .*/g), ['\n    directory: "{lessons_dir}"', '\n    directory: "{bank_dir}"']);
+});
+
+test('the tutor is not told where the bank is', () => {
+  assert.doesNotMatch(tutor, /examiner-bank|bank_dir/);
+});
+
+test('no agent is told to run a command or copy files', () => {
+  const body = template
+    .split('\n')
+    .filter((line) => !line.startsWith('#'))
+    .join('\n');
+  assert.doesNotMatch(body, /`node |`date |`cp |curl|\bcopy\b|\brun (a|the|this) |\bcommand\b/i);
+  assert.doesNotMatch(template, /\bcopy\b/i);
+});
+
+test('addressing is unchanged and the room keeps its bridge and private channel', () => {
+  assert.deepEqual(template.match(/addressing: \S+/g), ['addressing: anyone', 'addressing: anyone']);
+  assert.match(template, /  bridge:\n    type: bridge\n    description: .*\n    default: \[\$first\]\n/);
+  assert.match(template, /\n  bridge: "\{bridge\}"\n  channel_type: channel_private\n/);
+});
+
+test('both working folders refuse Edit and Write', () => {
+  for (const rel of ['../course/lessons/.claude/settings.json', '../examiner-bank/.claude/settings.json']) {
+    const deny = JSON.parse(read(rel)).permissions.deny;
+    assert.ok(deny.includes('Edit'), `${rel}: Edit`);
+    assert.ok(deny.includes('Write'), `${rel}: Write`);
+  }
+});
+
+test('the example user settings take the shell and web tools away and allow nothing extra', () => {
+  const settings = JSON.parse(read('../docs/claude-settings.example.json'));
+  assert.equal(settings.permissions.blockReadsOutsideWorkingDirectories, true);
+  for (const tool of ['Bash', 'WebFetch', 'WebSearch']) {
+    assert.ok(settings.permissions.deny.includes(tool), tool);
+  }
+  assert.equal('allow' in settings.permissions, false);
+  assert.equal('enableAllProjectMcpServers' in settings, false);
+});
+
+test('neither working folder is given MCP tools', () => {
+  for (const dir of ['../course/lessons/', '../examiner-bank/']) {
+    assert.ok(!readdirSync(new URL(dir, import.meta.url)).includes('.mcp.json'), dir);
+  }
 });
 
 test('the template and rules quote nothing from the marking notes', () => {
   const bankDir = new URL('../examiner-bank/', import.meta.url);
-  for (const file of readdirSync(bankDir)) {
+  for (const file of readdirSync(bankDir).filter((name) => name.endsWith('.md'))) {
     const bank = readFileSync(new URL(file, bankDir), 'utf8');
     const figures = bank.match(/[$£€₹]\s?\d[\d,.]*/g) ?? [];
     for (const figure of figures) {

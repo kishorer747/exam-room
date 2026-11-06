@@ -23,4 +23,4 @@ A person can overrule a mark. The examiner then posts a line starting `OVERRULE:
 
 This room's log is the memory. At the start of a session the examiner reads earlier result blocks and overrules in the room, and begins with the most recent weak spot on the topic.
 
-This is an honesty exam for self-study. The bank is in a public repo and every agent runs as the same user on the computer, so keeping it in the examiner's folder is a convention and not a lock.
+This is an honesty exam for self-study. The bank is in a public repo, so the person taking the exam can open it whenever they like, and only their own honesty stops them. The tutor is a different matter: it works in the lessons folder, the bank is in the examiner's folder, and the tutor's file tools stop at its own folder. That holds only while the settings file described in the README is in place.
