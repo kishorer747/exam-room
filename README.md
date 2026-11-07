@@ -6,6 +6,50 @@ Built for the Flip the Switch hackathon (November 4-7, 2026), Track 2.
 
 **Demo video:** _link to be added before submission_
 
+## Why this exists
+
+Ask one AI agent to teach you something and then test you, and it marks its own teaching. It explained the idea, it wants you to have understood, and it holds the answers while it asks the questions. That is the failure we wanted to remove: a quiz that is easy to pass, with a hint of the answer free to slip into a question. Close the chat, and whatever it learned about your mistakes is gone too.
+
+A typical case: a team lead wants a new hire to understand unit economics before they touch pricing. One agent teaches the lesson, asks "makes sense?", and accepts a half-right answer. Next week nobody knows which part the new hire got wrong.
+
+Exam Room splits teaching from marking. The tutor and the examiner are two agents with separate folders. The examiner is told never to reveal an answer, and the tutor was refused when it tried to open the question bank. The room's message log is the only memory, so a new session starts from the last weak spot instead of from zero.
+
+**Who it is for:** teams onboarding or training people, anyone who needs to check knowledge rather than just deliver it, and course creators who want a marker that is not the teacher.
+
+## Why Switch
+
+The split is held by Switch and by per-agent settings, not by prompts alone. Room membership and addressing decide who reads the room and who can direct each agent. The tutor works in `course/lessons` and the examiner in `examiner-bank`, and the settings file stops each agent's file reads at its own folder and removes the shell and web tools, so the tutor's read of the bank was refused in the rehearsal. What the agents say is still convention: only the examiner marks, a result block reveals no answer, and the examiner reads the room log before its first question. The table under [What is enforced and what is convention](#what-is-enforced-and-what-is-convention) marks each rule.
+
+```mermaid
+sequenceDiagram
+  participant P as You
+  participant T as tutor (course/lessons only)
+  participant E as examiner (examiner-bank only)
+  participant L as room log (memory)
+  T->>P: teaches one lesson
+  P->>T: ready for the exam
+  T->>E: @examiner hand-over
+  E->>P: 3 questions from the bank
+  P->>E: answers
+  E->>L: result block: FAIL, weak spot named
+  E->>T: @tutor weak spot (no answers, no figures)
+  T->>P: re-teaches that section
+  E->>P: retake with question ids not seen before
+  P->>E: answers
+  E->>L: result block: PASS
+  Note over E,L: next session, a fresh examiner reads the log first and starts from the last weak spot
+```
+
+In the rehearsals behind this diagram, the person's answers were sent from the owner's Console chats, not typed in the room by a separate student (`docs/evidence/rehearsal-exam-2026-11-06.md`, `docs/evidence/rehearsal-memory-2026-11-06.md`).
+
+| | One agent teaches and tests | Exam Room on Switch |
+|---|---|---|
+| Who marks you | The agent that just taught you, with the answers in view | A separate examiner in its own folder |
+| Can the teacher see the answers | Yes, same context | The tutor's read of the bank was refused |
+| Answers leaking into feedback | Nothing separates them | Result blocks name a weak spot, never an answer (convention; held in one rehearsal, 17 posts searched) |
+| Memory between sessions | Gone with the chat | The room log. A fresh examiner session cited the earlier result block by its message id |
+| Disagreeing with a mark | Argue with the agent | An `OVERRULE:` line written into the room |
+
 **Read this first.** The setup below has been tested in parts, on the author's own Switch Console. One full exam has been rehearsed from start to finish: a fail, a re-teach, a pass on the retake and an overrule (`docs/evidence/rehearsal-exam-2026-11-06.md`). In that rehearsal the person's answers were sent from Console chats, not typed in the room, and it is not the recorded run. This README says "is meant to" for anything that has not been seen running, and the section [Not yet observed](#not-yet-observed) lists those things in one place.
 
 ## What it is
