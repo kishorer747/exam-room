@@ -4,7 +4,7 @@ A Switch workflow for self-study: one room where a tutor agent teaches a short l
 
 Built for the Flip the Switch hackathon (November 4-7, 2026), Track 2.
 
-**Demo video:** _link to be added before submission_
+**Demo video:** [`docs/demo.mp4`](docs/demo.mp4), 2 min 4 s: a fail, a re-teach of the named weak spot, and a pass on new questions. Two wrong answers were given on purpose. Run record: [`docs/evidence/recorded-exam-2026-11-07.md`](docs/evidence/recorded-exam-2026-11-07.md).
 
 ## Why this exists
 
